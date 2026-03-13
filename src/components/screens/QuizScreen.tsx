@@ -143,7 +143,7 @@ export default function QuizScreen({ onNavigate, onAddPoints, quizAnswers, setQu
               return (
                 <motion.button
                   key={i}
-                  className={`w-full p-4 rounded-2xl font-body font-semibold text-left border-2 transition-all ${style}`}
+                  className={`relative overflow-hidden w-full p-6 min-h-[120px] rounded-2xl font-body font-bold text-left border-2 transition-all group ${style}`}
                   whileHover={!showResult ? { scale: 1.02, x: 5 } : {}}
                   whileTap={!showResult ? { scale: 0.98 } : {}}
                   onClick={() => handleAnswer(i)}
@@ -151,29 +151,52 @@ export default function QuizScreen({ onNavigate, onAddPoints, quizAnswers, setQu
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.1 }}
                 >
-                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-card font-display font-bold text-sm mr-3 shadow-sm">
-                    {opt.label}
-                  </span>
-                  {opt.text}
-                  
-                  {showResult && i === q.correctIndex && (
-                    <motion.span 
-                      className="float-right text-xl"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: [0, 1.5, 1] }}
-                    >
-                      ✅
-                    </motion.span>
+                  {opt.image && (
+                    <div className="absolute inset-0 z-0">
+                      <img 
+                        src={opt.image} 
+                        alt={opt.text} 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      <div className={`absolute inset-0 transition-colors ${
+                        (showResult && i === q.correctIndex) || selectedAnswer === i
+                          ? 'bg-black/40'
+                          : 'bg-black/70 group-hover:bg-black/50'
+                      }`} />
+                    </div>
                   )}
-                  {showResult && selectedAnswer === i && !isCorrect && (
-                    <motion.span 
-                      className="float-right text-xl"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                    >
-                      ❌
-                    </motion.span>
-                  )}
+
+                  <div className="relative z-10 flex items-center justify-between h-full">
+                    <div className="flex items-center">
+                      <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full font-display font-bold text-sm mr-4 shadow-sm flex-shrink-0 ${
+                         opt.image ? 'bg-white text-black' : 'bg-card'
+                      }`}>
+                        {opt.label}
+                      </span>
+                      <span className={opt.image ? 'text-white drop-shadow-md text-lg' : 'text-lg'}>
+                        {opt.text}
+                      </span>
+                    </div>
+                    
+                    {showResult && i === q.correctIndex && (
+                      <motion.span 
+                        className="text-2xl drop-shadow-md ml-2 flex-shrink-0"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: [0, 1.5, 1] }}
+                      >
+                        ✅
+                      </motion.span>
+                    )}
+                    {showResult && selectedAnswer === i && !isCorrect && (
+                      <motion.span 
+                        className="text-2xl drop-shadow-md ml-2 flex-shrink-0"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                      >
+                        ❌
+                      </motion.span>
+                    )}
+                  </div>
                 </motion.button>
               );
             })}

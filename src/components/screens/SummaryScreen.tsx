@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion';
-import { TOTAL_BUDGET, PARK_ITEMS, type ParkItem, type ItinerarySlot } from '@/lib/gameState';
+import { useRef } from 'react';
+import html2canvas from 'html2canvas';
+import { TOTAL_BUDGET, PARK_ITEMS, type ParkItem, type ItinerarySlot, type EarnedBadge } from '@/lib/gameState';
 import BudgetTracker from '@/components/BudgetTracker';
 import Confetti from '@/components/Confetti';
 import MascotGuide from '@/components/MascotGuide';
@@ -18,13 +20,16 @@ interface Props {
   onNavigate: (screen: GameScreen) => void;
   selectedAvatarId: string;
   souvenirDesign: { color: string; icon: string };
+  earnedBadges: EarnedBadge[];
 }
 
 export default function SummaryScreen({
   tripName, teamColor, selectedParkItems, itinerary,
   totalSpent, remaining, isOverBudget, browniePoints, hasBadge, onNavigate,
-  selectedAvatarId, souvenirDesign
+  selectedAvatarId, souvenirDesign, earnedBadges
 }: Props) {
+  const ticketRef = useRef<HTMLDivElement>(null);
+
   const rides = selectedParkItems.filter(i => i.category === 'ride');
   const meals = selectedParkItems.filter(i => i.category === 'meal');
   const activities = selectedParkItems.filter(i => i.category === 'activity');
@@ -39,12 +44,31 @@ export default function SummaryScreen({
     sunny: 'border-sunny',
   };
 
+  const handleDownloadTicket = async () => {
+    if (ticketRef.current) {
+      try {
+        const canvas = await html2canvas(ticketRef.current, {
+          scale: 2,
+          backgroundColor: null,
+        });
+        const image = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = image;
+        link.download = `${tripName || 'Adventure'}-Golden-Ticket.png`;
+        link.click();
+      } catch (error) {
+        console.error('Error downloading ticket', error);
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen p-4 pt-20 max-w-4xl mx-auto sparkle-bg space-y-8">
       <Confetti trigger={hasBadge} />
 
       {/* The Golden Ticket / Passport */}
       <motion.div 
+        ref={ticketRef}
         className="relative bg-[#FFF9E6] border-8 border-[#D4AF37] rounded-[40px] shadow-2xl overflow-hidden p-8 md:p-12 text-[#5C4033] font-display"
         initial={{ rotateX: 45, opacity: 0 }}
         animate={{ rotateX: 0, opacity: 1 }}
@@ -118,6 +142,24 @@ export default function SummaryScreen({
           </div>
         </div>
 
+        {/* Earned Badges Section */}
+        {earnedBadges && earnedBadges.length > 0 && (
+          <div className="mt-8 pt-8 border-t-2 border-dashed border-[#D4AF37]/50">
+            <h3 className="text-center text-xs font-black uppercase tracking-[0.3em] mb-6 opacity-40">Earned Accolades</h3>
+            <div className="flex flex-wrap justify-center gap-4">
+              {earnedBadges.map(badge => (
+                <div key={badge.id} className="flex flex-col items-center justify-center gap-2 bg-white/40 px-4 py-3 rounded-2xl border-2 border-[#D4AF37]/30 min-w-[120px]">
+                  <span className="text-4xl">{badge.emoji}</span>
+                  <div className="text-center">
+                    <p className="font-bold text-sm tracking-tight">{badge.name}</p>
+                    <p className="text-[10px] opacity-70 leading-tight">{badge.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Footer */}
         <div className="mt-12 flex justify-between items-end opacity-60">
           <div className="flex flex-col">
@@ -140,7 +182,15 @@ export default function SummaryScreen({
 
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <motion.button
-          className="px-8 py-4 rounded-3xl bg-primary text-primary-foreground font-display font-bold text-xl shadow-2xl hover:shadow-primary/30 transition-all flex items-center gap-2"
+          className="px-8 py-4 rounded-3xl bg-purple-600 text-white font-display font-bold text-xl shadow-xl hover:shadow-purple-500/30 transition-all flex items-center justify-center gap-2"
+          whileHover={{ scale: 1.05, y: -2 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleDownloadTicket}
+        >
+          ⬇️ Download Ticket
+        </motion.button>
+        <motion.button
+          className="px-8 py-4 rounded-3xl bg-primary text-primary-foreground font-display font-bold text-xl shadow-2xl hover:shadow-primary/30 transition-all flex items-center justify-center gap-2"
           whileHover={{ scale: 1.05, y: -2 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => window.print()}

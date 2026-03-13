@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
-import { TOTAL_BUDGET, PARK_ITEMS, DEFAULT_ITINERARY, type ParkItem, type ItinerarySlot } from '@/lib/gameState';
+import { TOTAL_BUDGET, PARK_ITEMS, DEFAULT_ITINERARY, QUIZ_QUESTIONS, type ParkItem, type ItinerarySlot, type EarnedBadge } from '@/lib/gameState';
 
 export type GameScreen = 'welcome' | 'learn' | 'quiz' | 'park' | 'itinerary' | 'customize' | 'summary' | 'present' | 'souvenir';
 
@@ -12,6 +12,7 @@ export function useGameState() {
   const [teamColor, setTeamColor] = useState('primary');
   const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
   const [learnSlideIndex, setLearnSlideIndex] = useState(0);
+  const [extraBudget, setExtraBudget] = useState(0);
   
   // NEW Engagement Features State
   const [selectedAvatarId, setSelectedAvatarId] = useState<string>('skilli');
@@ -40,7 +41,7 @@ export function useGameState() {
     }, 0);
   }, [selectedParkItems, weatherType]);
 
-  const remaining = TOTAL_BUDGET - totalSpent;
+  const remaining = TOTAL_BUDGET + extraBudget - totalSpent;
   const isOverBudget = remaining < 0;
 
   const rideCount = selectedParkItems.filter(i => i.category === 'ride').length;
@@ -48,6 +49,31 @@ export function useGameState() {
   const activityCount = selectedParkItems.filter(i => i.category === 'activity').length;
 
   const meetsRequirements = rideCount >= 3 && mealCount >= 1 && activityCount >= 1;
+
+  const earnedBadges = useMemo(() => {
+    const badges: EarnedBadge[] = [];
+    if (rideCount >= 3) {
+      badges.push({ id: 'thrill', name: 'Thrill Seeker', emoji: '🎢', description: 'Selected 3+ rides' });
+    }
+    if (mealCount >= 3) {
+      badges.push({ id: 'foodie', name: 'Foodie', emoji: '🍕', description: 'Selected 3+ meals' });
+    }
+    if (remaining > 300 && remaining <= TOTAL_BUDGET) {
+      badges.push({ id: 'budget', name: 'Budget Master', emoji: '💰', description: 'Saved over ₹300' });
+    }
+    const perfectQuiz = Object.values(quizAnswers).length === 3 && 
+       Object.entries(quizAnswers).every(([qId, aIdx]) => {
+         const q = QUIZ_QUESTIONS.find(qq => qq.id === parseInt(qId));
+         return q && q.correctIndex === aIdx;
+       });
+    if (perfectQuiz) {
+      badges.push({ id: 'quiz', name: 'Quiz Whiz', emoji: '🧠', description: 'Perfect quiz score' });
+    }
+    if (activityCount >= 3) {
+      badges.push({ id: 'activity', name: 'Activity Ace', emoji: '🎯', description: 'Selected 3+ activities' });
+    }
+    return badges;
+  }, [rideCount, mealCount, activityCount, remaining, quizAnswers]);
 
   const toggleItem = useCallback((id: string) => {
     setSelectedItems(prev =>
@@ -74,8 +100,10 @@ export function useGameState() {
     weatherType, setWeatherType,
     souvenirDesign, setSouvenirDesign,
     applauseCount, setApplauseCount,
+    extraBudget, setExtraBudget,
     totalSpent, remaining, isOverBudget,
     rideCount, mealCount, activityCount, meetsRequirements,
+    earnedBadges,
     TOTAL_BUDGET,
   };
 }

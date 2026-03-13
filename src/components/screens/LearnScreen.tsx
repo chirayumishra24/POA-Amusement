@@ -18,6 +18,7 @@ const LEARN_SLIDES = [
     text: 'Have you ever visited an amusement park? What was your favourite ride? If you had to plan the entire trip yourself, what would you include?',
     mascot: "Hi! I'm Skilli, your adventure guide! 🦊 Let's imagine the kind of adventure you would plan.",
     funFact: '🌟 Planning a trip involves making smart choices and working with a budget!',
+    image: '/assets/items/animated_map_bg.png'
   },
   {
     emoji: '💰',
@@ -26,7 +27,7 @@ const LEARN_SLIDES = [
     text: 'You are now a Trip Planner! Your goal is to design the perfect amusement park day while staying within a ₹1,500 budget.',
     mascot: "Every ride, snack, or activity requires thoughtful decision-making! 💸",
     funFact: '💡 Choose rides, meals, and activities wisely to create a fun trip!',
-    image: 'https://jurasikparkinn.com/wp-content/uploads/2024/02/6-Reasons-To-Explore-Amusement-Parks.webp'
+    image: '/assets/items/funny_fries.png'
   },
   {
     type: 'video',
@@ -51,12 +52,31 @@ const LEARN_SLIDES = [
     text: 'What types of rides are there? Which rides look exciting or relaxing? What else can people do in amusement parks?',
     mascot: "Which ride looked the most exciting from the video? 🎢",
     funFact: '🤔 Thinking about your choices helps you plan a better trip!',
+    image: '/assets/items/jungle_safari.png'
   },
 ];
 
 const MINI_QUESTIONS = [
-  { question: 'What ride do you want to try most?', emoji: '🤩', options: ['🎢 Thrilling Roller Coaster', '🎡 Relaxing Ferris Wheel', '🎠 Classic Carousel', '🚗 Bumper Cars'] },
-  { question: 'What activity sounds most fun?', emoji: '🎯', options: ['📸 Photo Booth', '🕹️ Arcade Games', '🎁 Souvenir Shop', '🎯 Interactive Games'] },
+  { 
+    question: 'What ride do you want to try most?', 
+    emoji: '🤩', 
+    options: [
+      { text: '🎢 Thrilling Roller Coaster', image: '/assets/items/thunder_coaster.png' },
+      { text: '🎡 Relaxing Ferris Wheel', image: '/assets/items/ferris_wheel.png' },
+      { text: '🎠 Classic Carousel', image: '/assets/items/carousel.png' },
+      { text: '🚗 Bumper Cars', image: '/assets/items/bumper_cars.png' }
+    ] 
+  },
+  { 
+    question: 'What activity sounds most fun?', 
+    emoji: '🎯', 
+    options: [
+      { text: '📸 Photo Booth', image: '/assets/items/photo_booth.png' },
+      { text: '🕹️ Arcade Games', image: '/assets/items/arcade_zone.png' },
+      { text: '🎨 Face Painting', image: '/assets/items/face_painting.png' },
+      { text: '🦁 Jungle Safari', image: '/assets/items/jungle_safari.png' }
+    ] 
+  },
 ];
 
 export default function LearnScreen({ onNavigate, onAddPoints, slideIndex, setSlideIndex }: Props) {
@@ -167,10 +187,10 @@ export default function LearnScreen({ onNavigate, onAddPoints, slideIndex, setSl
                 {MINI_QUESTIONS[questionIndex].options.map((opt, i) => (
                   <motion.button
                     key={i}
-                    className={`p-4 rounded-2xl font-body font-semibold text-sm border-2 transition-all ${
+                    className={`relative overflow-hidden p-6 rounded-2xl font-body font-bold text-sm md:text-base border-2 transition-all min-h-[100px] flex items-center justify-center group ${
                       miniAnswers[questionIndex] === i
-                        ? 'bg-primary text-primary-foreground border-primary shadow-lg scale-105'
-                        : 'bg-card text-foreground border-border hover:border-primary hover:shadow-md'
+                        ? 'border-primary ring-4 ring-primary/30 scale-105'
+                        : 'border-white/50 hover:border-primary hover:shadow-xl'
                     }`}
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.95 }}
@@ -179,7 +199,29 @@ export default function LearnScreen({ onNavigate, onAddPoints, slideIndex, setSl
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
                   >
-                    {opt}
+                    <div className="absolute inset-0">
+                      <img 
+                        src={opt.image} 
+                        alt={opt.text} 
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className={`absolute inset-0 transition-colors ${
+                        miniAnswers[questionIndex] === i 
+                          ? 'bg-primary/40 mix-blend-overlay' 
+                          : 'bg-black/60 group-hover:bg-black/40'
+                      }`} />
+                    </div>
+                    <span className="relative z-10 text-white drop-shadow-md text-center">{opt.text}</span>
+                    
+                    {miniAnswers[questionIndex] === i && (
+                      <motion.div
+                        className="absolute top-2 right-2 bg-accent text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shadow-lg z-20"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                      >
+                        ✓
+                      </motion.div>
+                    )}
                   </motion.button>
                 ))}
               </div>

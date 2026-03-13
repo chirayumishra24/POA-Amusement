@@ -12,6 +12,7 @@ export interface ParkItem {
   description: string;
   isOutdoor?: boolean;
   color: string;
+  imageUrl: string;
 }
 
 export interface AvatarOption {
@@ -20,6 +21,13 @@ export interface AvatarOption {
   emoji: string;
   description: string;
   trait: string;
+}
+
+export interface EarnedBadge {
+  id: string;
+  name: string;
+  emoji: string;
+  description: string;
 }
 
 export const AVATAR_OPTIONS: AvatarOption[] = [
@@ -45,26 +53,26 @@ export const WEATHER_OPTIONS: WeatherOption[] = [
 ];
 
 export const PARK_ITEMS: ParkItem[] = [
-  { id: 'r1', name: 'Thunder Coaster', cost: 400, category: 'ride', emoji: '🎢', description: 'The fastest ride in the park!', isOutdoor: true, color: 'primary' },
-  { id: 'r2', name: 'Giant Ferris Wheel', cost: 400, category: 'ride', emoji: '🎡', description: 'Amazing views from the top!', isOutdoor: true, color: 'purple' },
-  { id: 'r3', name: 'Spinning Teacups', cost: 200, category: 'ride', emoji: '☕', description: 'Whirl and twirl around!', isOutdoor: false, color: 'accent' },
-  { id: 'r4', name: 'Carousel', cost: 200, category: 'ride', emoji: '🎠', description: 'A classic ride for everyone.', isOutdoor: true, color: 'pink' },
-  { id: 'r5', name: 'Bumper Cars', cost: 200, category: 'ride', emoji: '🚗', description: 'Bump into your friends!', isOutdoor: false, color: 'secondary' },
-  { id: 'r6', name: 'Jungle Safari', cost: 400, category: 'ride', emoji: '🦁', description: 'See wild animals up close!', isOutdoor: true, color: 'orange' },
+  { id: 'r1', name: 'Thunder Coaster', cost: 400, category: 'ride', emoji: '🎢', description: 'The fastest ride in the park!', isOutdoor: true, color: 'primary', imageUrl: '/assets/items/thunder_coaster.png' },
+  { id: 'r2', name: 'Giant Ferris Wheel', cost: 400, category: 'ride', emoji: '🎡', description: 'Amazing views from the top!', isOutdoor: true, color: 'purple', imageUrl: '/assets/items/ferris_wheel.png' },
+  { id: 'r3', name: 'Spinning Teacups', cost: 200, category: 'ride', emoji: '☕', description: 'Whirl and twirl around!', isOutdoor: false, color: 'accent', imageUrl: '/assets/items/spinning_teacups.png' },
+  { id: 'r4', name: 'Carousel', cost: 200, category: 'ride', emoji: '🎠', description: 'A classic ride for everyone.', isOutdoor: true, color: 'pink', imageUrl: '/assets/items/carousel.png' },
+  { id: 'r5', name: 'Bumper Cars', cost: 200, category: 'ride', emoji: '🚗', description: 'Bump into your friends!', isOutdoor: false, color: 'secondary', imageUrl: '/assets/items/bumper_cars.png' },
+  { id: 'r6', name: 'Jungle Safari', cost: 400, category: 'ride', emoji: '🦁', description: 'See wild animals up close!', isOutdoor: true, color: 'orange', imageUrl: '/assets/items/jungle_safari.png' },
   
-  { id: 'm1', name: 'Funny Fries', cost: 100, category: 'meal', emoji: '🍟', description: 'Crispy and golden!', color: 'orange' },
-  { id: 'm2', name: 'Glitter Pizza', cost: 100, category: 'meal', emoji: '🍕', description: 'A cheesy treat!', color: 'sunny' },
-  { id: 'm3', name: 'Rainbow Ice Cream', cost: 100, category: 'meal', emoji: '🍦', description: 'Cool and sweet!', color: 'pink' },
+  { id: 'm1', name: 'Funny Fries', cost: 100, category: 'meal', emoji: '🍟', description: 'Crispy and golden!', color: 'orange', imageUrl: '/assets/items/funny_fries.png' },
+  { id: 'm2', name: 'Glitter Pizza', cost: 100, category: 'meal', emoji: '🍕', description: 'A cheesy treat!', color: 'sunny', imageUrl: '/assets/items/glitter_pizza.png' },
+  { id: 'm3', name: 'Rainbow Ice Cream', cost: 100, category: 'meal', emoji: '🍦', description: 'Cool and sweet!', color: 'pink', imageUrl: '/assets/items/rainbow_ice_cream.png' },
   
-  { id: 'a1', name: 'Arcade Zone', cost: 100, category: 'activity', emoji: '🕹️', description: 'Play the latest games!', color: 'secondary' },
-  { id: 'a2', name: 'Photo Booth', cost: 100, category: 'activity', emoji: '📸', description: 'Take silly memories home.', color: 'purple' },
-  { id: 'a3', name: 'Face Painting', cost: 100, category: 'activity', emoji: '🎨', description: 'Transform into a tiger!', color: 'accent' },
+  { id: 'a1', name: 'Arcade Zone', cost: 100, category: 'activity', emoji: '🕹️', description: 'Play the latest games!', color: 'secondary', imageUrl: '/assets/items/arcade_zone.png' },
+  { id: 'a2', name: 'Photo Booth', cost: 100, category: 'activity', emoji: '📸', description: 'Take silly memories home.', color: 'purple', imageUrl: '/assets/items/photo_booth.png' },
+  { id: 'a3', name: 'Face Painting', cost: 100, category: 'activity', emoji: '🎨', description: 'Transform into a tiger!', color: 'accent', imageUrl: '/assets/items/face_painting.png' },
 ];
 
 export interface QuizQuestion {
   id: number;
   question: string;
-  options: { label: string; text: string }[];
+  options: { label: string; text: string; image?: string }[];
   correctIndex: number;
   explanation: string;
 }
@@ -74,9 +82,9 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     id: 1,
     question: 'If you enter an amusement park, what would you do first?',
     options: [
-      { label: 'A', text: 'Try the biggest ride' },
-      { label: 'B', text: 'Explore smaller fun rides' },
-      { label: 'C', text: 'Look for food and games' },
+      { label: 'A', text: 'Try the biggest ride', image: '/assets/items/thunder_coaster.png' },
+      { label: 'B', text: 'Explore smaller fun rides', image: '/assets/items/spinning_teacups.png' },
+      { label: 'C', text: 'Look for food and games', image: '/assets/items/funny_fries.png' },
     ],
     correctIndex: 1,
     explanation: 'Exploring smaller rides first is a great way to start your adventure!',
@@ -85,9 +93,9 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     id: 2,
     question: 'If you had limited money, what would you do?',
     options: [
-      { label: 'A', text: 'Spend on thrilling rides' },
-      { label: 'B', text: 'Balance rides and food' },
-      { label: 'C', text: 'Save some money for activities' },
+      { label: 'A', text: 'Spend on thrilling rides', image: '/assets/items/ferris_wheel.png' },
+      { label: 'B', text: 'Balance rides and food', image: '/assets/items/glitter_pizza.png' },
+      { label: 'C', text: 'Save some money for activities', image: '/assets/items/photo_booth.png' },
     ],
     correctIndex: 1,
     explanation: 'Balancing your budget helps ensure you have fun all day long!',
@@ -96,9 +104,9 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     id: 3,
     question: 'Which part of an amusement park do you enjoy most?',
     options: [
-      { label: 'A', text: 'Thrill rides' },
-      { label: 'B', text: 'Food stalls' },
-      { label: 'C', text: 'Games and activities' },
+      { label: 'A', text: 'Thrill rides', image: '/assets/items/bumper_cars.png' },
+      { label: 'B', text: 'Food stalls', image: '/assets/items/rainbow_ice_cream.png' },
+      { label: 'C', text: 'Games and activities', image: '/assets/items/arcade_zone.png' },
     ],
     correctIndex: 0, // No wrong answer for preference, but we'll mark one for logic
     explanation: 'There are so many fun things to do! Thrill rides are a park favorite!',

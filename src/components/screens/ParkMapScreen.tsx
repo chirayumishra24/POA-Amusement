@@ -3,6 +3,7 @@ import { PARK_ITEMS, WEATHER_OPTIONS, AVATAR_OPTIONS, type ParkItem } from '@/li
 import BudgetTracker from '@/components/BudgetTracker';
 import EmojiExplosion from '@/components/EmojiExplosion';
 import MascotGuide from '@/components/MascotGuide';
+import AnimatedParkMap3D from '@/components/AnimatedParkMap3D';
 import type { GameScreen } from '@/hooks/useGameState';
 import { useState } from 'react';
 import { useSound } from '@/hooks/useSound';
@@ -21,6 +22,8 @@ interface Props {
   weatherType: string;
   setWeatherType: (w: string) => void;
   selectedAvatarId: string;
+  extraBudget: number;
+  setExtraBudget: (amount: number | ((prev: number) => number)) => void;
 }
 
 function ItemCard({ item, selected, onToggle }: { item: ParkItem; selected: boolean; onToggle: () => void }) {
@@ -38,38 +41,66 @@ function ItemCard({ item, selected, onToggle }: { item: ParkItem; selected: bool
 
   return (
     <motion.button
-      className={`p-4 rounded-3xl border-2 text-left transition-all relative overflow-hidden ${
+      className={`relative w-full rounded-3xl text-left transition-all overflow-hidden group ${
         selected 
-          ? `${colors.border} ${colors.bg} shadow-xl ${colors.glow}` 
-          : 'border-border bg-card hover:shadow-md hover:border-muted-foreground/30'
+          ? `ring-4 ring-offset-2 ring-${item.color} ${colors.glow}` 
+          : 'hover:shadow-xl hover:-translate-y-1'
       }`}
-      whileHover={{ scale: 1.03, y: -2 }}
-      whileTap={{ scale: 0.97 }}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
       onClick={onToggle}
       layout
     >
-      {/* Selected glow */}
+      {/* Background Image */}
+      <div className="absolute inset-0 w-full h-full">
+        <img 
+          src={item.imageUrl} 
+          alt={item.name}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+        />
+        {/* Dark overlay for text legibility */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
+      </div>
+
+      {/* Selected glow effect overlay */}
       {selected && (
         <motion.div
-          className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"
+          className={`absolute inset-0 bg-${item.color}/20 mix-blend-overlay`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         />
       )}
       
-      <div className="flex items-start gap-3 relative">
-        <motion.span 
-          className="text-3xl flex-shrink-0"
-          animate={selected ? { scale: [1, 1.2, 1] } : {}}
-          transition={{ duration: 0.3 }}
-        >
-          {item.emoji}
-        </motion.span>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between">
-            <h3 className="font-display font-bold text-sm truncate">{item.name}</h3>
+      {/* Content wrapper */}
+      <div className="relative p-5 h-full min-h-[160px] flex flex-col justify-end">
+        <div className="flex justify-between items-start mb-auto">
+          <motion.span 
+            className="text-3xl drop-shadow-lg bg-black/30 w-10 h-10 flex items-center justify-center rounded-full backdrop-blur-sm"
+            animate={selected ? { scale: [1, 1.2, 1] } : {}}
+            transition={{ duration: 0.3 }}
+          >
+            {item.emoji}
+          </motion.span>
+          
+          <AnimatePresence>
+            {selected && (
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                exit={{ scale: 0, rotate: 180 }}
+                className="bg-accent text-accent-foreground text-xl w-8 h-8 rounded-full flex items-center justify-center shadow-lg"
+              >
+                ✓
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <div className="mt-4">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="font-display font-bold text-lg text-white drop-shadow-md leading-tight">{item.name}</h3>
             <motion.span 
-              className="font-display font-bold text-sm text-primary ml-2"
+              className="font-display font-black text-lg text-[#FFD700] drop-shadow-lg bg-black/40 px-2 py-0.5 rounded-lg"
               key={selected ? 'selected' : 'not'}
               initial={{ scale: 1 }}
               animate={{ scale: selected ? [1, 1.3, 1] : 1 }}
@@ -77,27 +108,17 @@ function ItemCard({ item, selected, onToggle }: { item: ParkItem; selected: bool
               ₹{item.cost}
             </motion.span>
           </div>
-          <p className="text-xs text-muted-foreground mt-1 line-clamp-2 font-body">{item.description}</p>
-          <span className={`inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold ${
-            item.category === 'ride' ? (item.cost === 400 ? 'bg-primary/20 text-primary' : 'bg-secondary/20 text-secondary') :
-            item.category === 'meal' ? 'bg-orange/20 text-orange' : 'bg-purple/20 text-purple'
+          
+          <p className="text-sm text-gray-200 mt-1 line-clamp-2 font-body drop-shadow">{item.description}</p>
+          
+          <span className={`inline-block mt-2 px-2.5 py-1 rounded-full text-xs font-bold backdrop-blur-md ${
+            item.category === 'ride' ? (item.cost === 400 ? 'bg-primary/80 text-white' : 'bg-secondary/80 text-white') :
+            item.category === 'meal' ? 'bg-orange/80 text-white' : 'bg-purple/80 text-white'
           }`}>
             {item.category === 'ride' ? (item.cost === 400 ? '🎢 Big Ride' : '🎠 Small Ride') :
              item.category === 'meal' ? '🍕 Meal/Snack' : '🎯 Activity'}
           </span>
         </div>
-        <AnimatePresence>
-          {selected && (
-            <motion.span
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              exit={{ scale: 0, rotate: 180 }}
-              className="text-accent text-xl flex-shrink-0"
-            >
-              ✅
-            </motion.span>
-          )}
-        </AnimatePresence>
       </div>
     </motion.button>
   );
@@ -106,13 +127,15 @@ function ItemCard({ item, selected, onToggle }: { item: ParkItem; selected: bool
 export default function ParkMapScreen({
   selectedItems, toggleItem, totalSpent, remaining, isOverBudget,
   rideCount, mealCount, activityCount, meetsRequirements, onNavigate,
-  weatherType, setWeatherType, selectedAvatarId
+  weatherType, setWeatherType, selectedAvatarId, extraBudget, setExtraBudget
 }: Props) {
   const { playSound } = useSound();
   const rides = PARK_ITEMS.filter(i => i.category === 'ride');
   const meals = PARK_ITEMS.filter(i => i.category === 'meal');
   const activities = PARK_ITEMS.filter(i => i.category === 'activity');
   const [selectExplosion, setSelectExplosion] = useState(false);
+  const [mysteryEventAppeared, setMysteryEventAppeared] = useState(false);
+  const [mysteryMessage, setMysteryMessage] = useState<string | null>(null);
 
   const currentWeather = WEATHER_OPTIONS.find(w => w.type === weatherType)!;
   const avatar = AVATAR_OPTIONS.find(a => a.id === selectedAvatarId)!;
@@ -137,8 +160,22 @@ export default function ParkMapScreen({
     return "Great choices so far! Keep going! 💪";
   };
 
+  const handleMysteryBox = () => {
+    playSound('success');
+    setMysteryEventAppeared(true);
+    const events = [
+      { msg: "Lucky find! You found a dropped ₹100 note on the ground!", bonus: 100 },
+      { msg: "Special Bonus! The park manager gave you ₹200 for being polite!", bonus: 200 },
+      { msg: "Oh no! A monkey stole ₹50 from your pocket!", bonus: -50 }
+    ];
+    const event = events[Math.floor(Math.random() * events.length)];
+    setExtraBudget(prev => prev + event.bonus);
+    setMysteryMessage(event.msg);
+    setTimeout(() => setMysteryMessage(null), 5000); // Hide message after 5 seconds
+  };
+
   return (
-    <div className="min-h-screen p-4 pt-20 max-w-5xl mx-auto fun-bg">
+    <div className="min-h-screen p-4 pt-20 max-w-5xl mx-auto fun-bg relative">
       <EmojiExplosion trigger={selectExplosion} emoji="⭐" />
       <MascotGuide message={getMascotMessage()} key={`${rideCount}-${mealCount}-${activityCount}-${isOverBudget}`} />
 
@@ -152,6 +189,10 @@ export default function ParkMapScreen({
         <p className="text-muted-foreground font-body">Tap items to add them to your trip!</p>
       </motion.div>
 
+
+      {/* 3D Animated Park Map Banner */}
+      <AnimatedParkMap3D />
+      
       {/* Weather Selector */}
       <div className="flex flex-wrap justify-center gap-2 mb-8">
         {WEATHER_OPTIONS.map((w) => (
@@ -198,41 +239,7 @@ export default function ParkMapScreen({
 
       <div className="grid lg:grid-cols-[1fr_300px] gap-6">
         <div className="space-y-6">
-          {/* Animated Map Visuals */}
-          <div className="relative h-48 rounded-3xl overflow-hidden bg-gradient-to-b from-sky-300 to-green-100 border-4 border-white shadow-xl mb-6">
-            <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
-            
-            {/* Ferris Wheel Animation */}
-            <motion.div 
-              className="absolute left-[15%] top-1/2 -translate-y-1/2 text-6xl"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-            >
-              🎡
-            </motion.div>
 
-            {/* Roller Coaster Animation */}
-            <motion.div 
-              className="absolute right-[10%] top-1/4 text-5xl"
-              animate={{ 
-                x: [-100, 200],
-                y: [0, -20, 20, 0],
-                rotate: [0, -20, 20, 0]
-              }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            >
-              🎢
-            </motion.div>
-
-            {/* Clouds */}
-            <motion.div 
-              className="absolute top-4 text-3xl opacity-60"
-              animate={{ x: [-20, 400] }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            >
-              ☁️
-            </motion.div>
-          </div>
           {/* Requirements checklist */}
           <motion.div 
             className="gradient-card p-4"

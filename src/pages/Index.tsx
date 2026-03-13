@@ -16,8 +16,27 @@ import { AVATAR_OPTIONS, WEATHER_OPTIONS } from '@/lib/gameState';
 const Index = () => {
   const game = useGameState();
 
+  const getBackgroundClass = () => {
+    switch (game.screen) {
+      case 'welcome':
+      case 'learn':
+      case 'quiz':
+        return 'bg-gradient-to-br from-blue-400 via-blue-200 to-cyan-100'; // Morning
+      case 'park':
+      case 'itinerary':
+      case 'customize':
+        return 'bg-gradient-to-br from-orange-300 via-amber-200 to-yellow-100'; // Afternoon
+      case 'summary':
+      case 'present':
+      case 'souvenir':
+        return 'bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900'; // Night
+      default:
+        return 'bg-background';
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className={`min-h-screen relative transition-colors duration-1000 ${getBackgroundClass()}`}>
       {/* Floating background elements */}
       <FloatingElements />
       
@@ -71,6 +90,8 @@ const Index = () => {
           weatherType={game.weatherType}
           setWeatherType={game.setWeatherType}
           selectedAvatarId={game.selectedAvatarId}
+          extraBudget={game.extraBudget}
+          setExtraBudget={game.setExtraBudget}
         />
       )}
       {game.screen === 'itinerary' && (
@@ -110,6 +131,7 @@ const Index = () => {
           onNavigate={game.setScreen}
           selectedAvatarId={game.selectedAvatarId}
           souvenirDesign={game.souvenirDesign}
+          earnedBadges={game.earnedBadges}
         />
       )}
       {game.screen === 'present' && (
