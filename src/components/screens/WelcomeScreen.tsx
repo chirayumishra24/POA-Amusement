@@ -79,7 +79,7 @@ export default function WelcomeScreen({ onNavigate, selectedAvatarId, setSelecte
                   Amusement Park<br />Adventure
                 </h1>
                 <p className="font-body text-lg md:text-xl text-muted-foreground max-w-lg mx-auto leading-relaxed">
-                  Join Skilli and friends on the ultimate trip planning mission! 🎢 Stay in budget and build the perfect day.
+                  Join our explorers on the ultimate trip planning mission! 🎢 Stay in budget and build the perfect day.
                 </p>
               </div>
 

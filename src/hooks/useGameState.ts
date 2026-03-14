@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
-import { TOTAL_BUDGET, PARK_ITEMS, DEFAULT_ITINERARY, QUIZ_QUESTIONS, type ParkItem, type ItinerarySlot, type EarnedBadge } from '@/lib/gameState';
+import { TOTAL_BUDGET, PARK_ITEMS, DEFAULT_ITINERARY, QUIZ_QUESTIONS, type ParkItem, type ItinerarySlot, type EarnedBadge, type SouvenirDesign } from '@/lib/gameState';
 
 export type GameScreen = 'welcome' | 'learn' | 'quiz' | 'park' | 'itinerary' | 'customize' | 'summary' | 'present' | 'souvenir';
 
@@ -15,9 +15,14 @@ export function useGameState() {
   const [extraBudget, setExtraBudget] = useState(0);
   
   // NEW Engagement Features State
-  const [selectedAvatarId, setSelectedAvatarId] = useState<string>('skilli');
+  const [selectedAvatarId, setSelectedAvatarId] = useState<string>('girl');
   const [weatherType, setWeatherType] = useState<string>('sunny');
-  const [souvenirDesign, setSouvenirDesign] = useState<{ color: string; icon: string }>({ color: '#FF7E5F', icon: '🎨' });
+  const [souvenirDesign, setSouvenirDesign] = useState<SouvenirDesign>({ 
+    color: '#FF7E5F', 
+    icon: '🎨',
+    pattern: 'none',
+    shape: 'circle'
+  });
   const [applauseCount, setApplauseCount] = useState(0);
 
   const selectedParkItems = useMemo(() =>
@@ -61,10 +66,10 @@ export function useGameState() {
     if (remaining > 300 && remaining <= TOTAL_BUDGET) {
       badges.push({ id: 'budget', name: 'Budget Master', emoji: '💰', description: 'Saved over ₹300' });
     }
-    const perfectQuiz = Object.values(quizAnswers).length === 3 && 
+    const perfectQuiz = Object.values(quizAnswers).length === QUIZ_QUESTIONS.length && 
        Object.entries(quizAnswers).every(([qId, aIdx]) => {
          const q = QUIZ_QUESTIONS.find(qq => qq.id === parseInt(qId));
-         return q && q.correctIndex === aIdx;
+         return q && (q.correctIndex === -1 || q.correctIndex === aIdx);
        });
     if (perfectQuiz) {
       badges.push({ id: 'quiz', name: 'Quiz Whiz', emoji: '🧠', description: 'Perfect quiz score' });

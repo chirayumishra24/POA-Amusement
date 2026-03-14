@@ -1,5 +1,25 @@
 export const TOTAL_BUDGET = 1500;
 
+export interface SouvenirDesign {
+  color: string;
+  icon: string;
+  pattern: 'none' | 'sparkles' | 'stripes' | 'stars';
+  shape: 'circle' | 'hexagon' | 'star';
+}
+
+export const SOUVENIR_PATTERNS = [
+  { id: 'none', label: 'Solid Color', icon: '🎨' },
+  { id: 'sparkles', label: 'Sparkles', icon: '✨' },
+  { id: 'stripes', label: 'Stripes', icon: '🦓' },
+  { id: 'stars', label: 'Mini Stars', icon: '⭐' },
+];
+
+export const SOUVENIR_SHAPES = [
+  { id: 'circle', label: 'Classic Circle', icon: '⭕' },
+  { id: 'hexagon', label: 'Modern Hex', icon: '⬢' },
+  { id: 'star', label: 'Super Star', icon: '⭐' },
+];
+
 export type RideType = 'small' | 'big';
 export type ItemCategory = 'ride' | 'meal' | 'activity';
 
@@ -31,9 +51,8 @@ export interface EarnedBadge {
 }
 
 export const AVATAR_OPTIONS: AvatarOption[] = [
-  { id: 'skilli', name: 'Skilli the Fox', emoji: '🦊', description: 'Quick & Clever!', trait: 'Budget Expert' },
-  { id: 'bolt', name: 'Bolt the Robot', emoji: '🤖', description: 'Beep Boop!', trait: 'Strategy Master' },
-  { id: 'luna', name: 'Luna the Cat', emoji: '🐈', description: 'Calm & Creative!', trait: 'Idea Gen' },
+  { id: 'girl', name: 'Girl', emoji: '👧', description: 'Smart & Creative!', trait: 'Adventure Explorer' },
+  { id: 'boy', name: 'Boy', emoji: '👦', description: 'Brave & Curious!', trait: 'Strategy Master' },
 ];
 
 export type WeatherType = 'sunny' | 'rainy' | 'holiday';
@@ -75,42 +94,175 @@ export interface QuizQuestion {
   options: { label: string; text: string; image?: string }[];
   correctIndex: number;
   explanation: string;
+  round?: string;
 }
 
 export const QUIZ_QUESTIONS: QuizQuestion[] = [
+  // Round 1
   {
     id: 1,
-    question: 'If you enter an amusement park, what would you do first?',
+    round: 'Round 1: Quick Budget Quiz',
+    question: 'You enter the amusement park with ₹1,500. What should you do first?',
     options: [
-      { label: 'A', text: 'Try the biggest ride', image: '/assets/items/thunder_coaster.png' },
-      { label: 'B', text: 'Explore smaller fun rides', image: '/assets/items/spinning_teacups.png' },
-      { label: 'C', text: 'Look for food and games', image: '/assets/items/funny_fries.png' },
+      { label: 'A', text: 'Spend it all on the biggest ride', image: '/assets/items/thunder_coaster.png' },
+      { label: 'B', text: 'Plan how to use the money', image: '/assets/items/animated_map_bg.png' },
+      { label: 'C', text: 'Buy food immediately', image: '/assets/items/funny_fries.png' },
     ],
     correctIndex: 1,
-    explanation: 'Exploring smaller rides first is a great way to start your adventure!',
+    explanation: 'Planning helps you spend wisely and avoid running out of money.',
   },
   {
     id: 2,
-    question: 'If you had limited money, what would you do?',
+    round: 'Round 1: Quick Budget Quiz',
+    question: 'A big ride costs ₹400. If you take 2 big rides, how much will you spend?',
     options: [
-      { label: 'A', text: 'Spend on thrilling rides', image: '/assets/items/ferris_wheel.png' },
-      { label: 'B', text: 'Balance rides and food', image: '/assets/items/glitter_pizza.png' },
-      { label: 'C', text: 'Save some money for activities', image: '/assets/items/photo_booth.png' },
+      { label: 'A', text: '₹600', image: '/assets/items/ferris_wheel.png' },
+      { label: 'B', text: '₹700' },
+      { label: 'C', text: '₹800' },
     ],
-    correctIndex: 1,
-    explanation: 'Balancing your budget helps ensure you have fun all day long!',
+    correctIndex: 2,
+    explanation: '₹400 + ₹400 = ₹800. Remember your math!',
   },
   {
     id: 3,
-    question: 'Which part of an amusement park do you enjoy most?',
+    round: 'Round 1: Quick Budget Quiz',
+    question: 'A snack costs ₹100 and a game costs ₹100. What is the total cost?',
     options: [
-      { label: 'A', text: 'Thrill rides', image: '/assets/items/bumper_cars.png' },
-      { label: 'B', text: 'Food stalls', image: '/assets/items/rainbow_ice_cream.png' },
-      { label: 'C', text: 'Games and activities', image: '/assets/items/arcade_zone.png' },
+      { label: 'A', text: '₹150' },
+      { label: 'B', text: '₹200', image: '/assets/items/glitter_pizza.png' },
+      { label: 'C', text: '₹300' },
     ],
-    correctIndex: 0, // No wrong answer for preference, but we'll mark one for logic
-    explanation: 'There are so many fun things to do! Thrill rides are a park favorite!',
+    correctIndex: 1,
+    explanation: '₹100 + ₹100 = ₹200. Yummy and fun!',
   },
+  {
+    id: 4,
+    round: 'Round 1: Quick Budget Quiz',
+    question: 'If you spend ₹1,200 from ₹1,500, how much money is left?',
+    options: [
+      { label: 'A', text: '₹200' },
+      { label: 'B', text: '₹300' },
+      { label: 'C', text: '₹400' },
+    ],
+    correctIndex: 1,
+    explanation: '₹1,500 - ₹1,200 = ₹300. You still have some money left!',
+  },
+  
+  // Round 2
+  {
+    id: 5,
+    round: 'Round 2: Spend Smart Challenge',
+    question: 'Your team wants: 1 Big Ride (₹400), 2 Small Rides (₹200 each), and 1 Snack (₹100). How much money will you spend?',
+    options: [
+      { label: 'A', text: '₹700' },
+      { label: 'B', text: '₹800' },
+      { label: 'C', text: '₹900' },
+    ],
+    correctIndex: 2,
+    explanation: '₹400 + ₹200 + ₹200 + ₹100 = ₹900. You will have ₹600 left from your ₹1,500 budget!',
+  },
+  {
+    id: 6,
+    round: 'Round 2: Spend Smart Challenge',
+    question: 'If you only have ₹300 left, what is the smartest choice?',
+    options: [
+      { label: 'A', text: 'Spend everything on one ride', image: '/assets/items/thunder_coaster.png' },
+      { label: 'B', text: 'Save some and buy a snack', image: '/assets/items/rainbow_ice_cream.png' },
+      { label: 'C', text: 'Ignore the money', image: '/assets/items/jungle_safari.png' },
+    ],
+    correctIndex: 1,
+    explanation: 'Smart budgeting includes saving and spending wisely.',
+  },
+
+  // Round 3
+  {
+    id: 7,
+    round: 'Round 3: Save • Spend • Share',
+    question: 'One friend forgot money for snacks. What should your team do?',
+    options: [
+      { label: 'A', text: 'Ignore them' },
+      { label: 'B', text: 'Share food with them', image: '/assets/items/glitter_pizza.png' },
+      { label: 'C', text: 'Tell them to watch' },
+    ],
+    correctIndex: 1,
+    explanation: 'Sharing builds team spirit and kindness! Sharing is caring.',
+  },
+  {
+    id: 8,
+    round: 'Round 3: Save • Spend • Share',
+    question: 'If you save ₹200 from ₹1,500, how much did you spend?',
+    options: [
+      { label: 'A', text: '₹1,200' },
+      { label: 'B', text: '₹1,300' },
+      { label: 'C', text: '₹1,400' },
+    ],
+    correctIndex: 1,
+    explanation: '₹1,500 - ₹200 = ₹1,300. You spent most of it!',
+  },
+
+  // Riddles
+  {
+    id: 9,
+    round: 'Budget Riddles',
+    question: 'I help you plan before you buy. I stop your money from saying goodbye. People use me before they spend. What am I?',
+    options: [
+      { label: 'A', text: 'A Budget' },
+      { label: 'B', text: 'A Wallet' },
+      { label: 'C', text: 'A Receipt' },
+    ],
+    correctIndex: 0,
+    explanation: 'A budget is your plan for how to use your money wisely!',
+  },
+  {
+    id: 10,
+    round: 'Budget Riddles',
+    question: 'I can be big or small. People scream when they ride me at the park. But if I cost ₹400, you must think before trying me. What am I?',
+    options: [
+      { label: 'A', text: 'A Monster' },
+      { label: 'B', text: 'A Big Ride', image: '/assets/items/thunder_coaster.png' },
+      { label: 'C', text: 'A Haunted House' },
+    ],
+    correctIndex: 1,
+    explanation: 'Big rides are super fun but cost more money!',
+  },
+  {
+    id: 11,
+    round: 'Budget Riddles',
+    question: 'If you keep some money for later and do not spend it now, what smart habit are you showing?',
+    options: [
+      { label: 'A', text: 'Shopping' },
+      { label: 'B', text: 'Sharing' },
+      { label: 'C', text: 'Saving' },
+    ],
+    correctIndex: 2,
+    explanation: 'Saving is a great way to have fun later or buy something bigger!',
+  },
+  {
+    id: 12,
+    round: 'Budget Riddles',
+    question: 'You have ₹1,500. You buy: 1 Big Ride (₹400), 2 Small Rides (₹200 each), 1 Snack (₹100), 1 Activity (₹100). How much money is left?',
+    options: [
+      { label: 'A', text: '₹300' },
+      { label: 'B', text: '₹400' },
+      { label: 'C', text: '₹500' },
+    ],
+    correctIndex: 2,
+    explanation: 'Total spent = ₹400 + ₹200 + ₹200 + ₹100 + ₹100 = ₹1,000. So, ₹1,500 - ₹1,000 = ₹500 left!',
+  },
+
+  // Final Thinking Question
+  {
+    id: 13,
+    round: 'Final Thinking Question',
+    question: 'If you had ₹500 left at the park, would you SAVE it, SPEND it, or SHARE it?',
+    options: [
+      { label: 'A', text: 'SAVE it for later!' },
+      { label: 'B', text: 'SPEND it on more fun!' },
+      { label: 'C', text: 'SHARE it with friends!' },
+    ],
+    correctIndex: -1, 
+    explanation: "All choices are great! Saving builds for the future, spending enjoys the moment wisely, and sharing spreads happiness!",
+  }
 ];
 
 export interface ItinerarySlot {

@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { useSound } from '@/hooks/useSound';
-import { AVATAR_OPTIONS, type ParkItem } from '@/lib/gameState';
+import { AVATAR_OPTIONS, type ParkItem, type SouvenirDesign } from '@/lib/gameState';
 import type { GameScreen } from '@/hooks/useGameState';
 
 interface Props {
@@ -17,7 +17,7 @@ interface Props {
   applauseCount: number;
   setApplauseCount: (c: number | ((prev: number) => number)) => void;
   selectedAvatarId: string;
-  souvenirDesign: { color: string; icon: string };
+  souvenirDesign: SouvenirDesign;
 }
 
 export default function PresentScreen({

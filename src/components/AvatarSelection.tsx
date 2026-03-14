@@ -10,8 +10,8 @@ interface Props {
 export default function AvatarSelection({ selectedId, onSelect, onConfirm }: Props) {
   return (
     <div className="space-y-6 text-center">
-      <h2 className="font-display text-2xl font-bold text-primary">Choose Your Adventure Guide!</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <h2 className="font-display text-2xl font-bold text-primary">Choose Your Character</h2>
+      <div className="grid grid-cols-2 gap-6 max-w-lg mx-auto">
         {AVATAR_OPTIONS.map((avatar) => (
           <motion.button
             key={avatar.id}

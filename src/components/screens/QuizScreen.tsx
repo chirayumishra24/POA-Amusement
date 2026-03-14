@@ -35,13 +35,13 @@ export default function QuizScreen({ onNavigate, onAddPoints, quizAnswers, setQu
 
   const q = QUIZ_QUESTIONS[currentQ];
   const selectedAnswer = quizAnswers[q.id];
-  const isCorrect = selectedAnswer === q.correctIndex;
+  const isCorrect = q.correctIndex === -1 ? true : selectedAnswer === q.correctIndex;
 
   const handleAnswer = (idx: number) => {
     if (showResult) return;
     setQuizAnswers({ ...quizAnswers, [q.id]: idx });
     setShowResult(true);
-    if (idx === q.correctIndex) {
+    if (idx === q.correctIndex || q.correctIndex === -1) {
       onAddPoints(1);
       setConfetti(true);
       setExplosion(true);
@@ -112,6 +112,14 @@ export default function QuizScreen({ onNavigate, onAddPoints, quizAnswers, setQu
           exit={{ opacity: 0, scale: 0.9, y: -20 }}
           transition={{ type: 'spring', stiffness: 150, damping: 15 }}
         >
+          {q.round && (
+            <motion.div 
+               className="text-center mb-2 px-3 py-1 bg-primary/20 text-primary font-bold rounded-full text-sm font-display mx-auto w-max"
+            >
+               {q.round}
+            </motion.div>
+          )}
+
           {/* Question emoji */}
           <motion.div 
             className="text-5xl text-center mb-4"
@@ -130,7 +138,9 @@ export default function QuizScreen({ onNavigate, onAddPoints, quizAnswers, setQu
               const colors = optionColors[i % optionColors.length];
               let style: string;
               
-              if (showResult && i === q.correctIndex) {
+              const isOptionCorrect = q.correctIndex === -1 ? selectedAnswer === i : i === q.correctIndex;
+
+              if (showResult && isOptionCorrect) {
                 style = 'bg-accent/20 text-foreground border-accent ring-2 ring-accent/30 shadow-lg';
               } else if (showResult && selectedAnswer === i && !isCorrect) {
                 style = 'bg-destructive/15 text-foreground border-destructive ring-2 ring-destructive/30';
@@ -178,7 +188,7 @@ export default function QuizScreen({ onNavigate, onAddPoints, quizAnswers, setQu
                       </span>
                     </div>
                     
-                    {showResult && i === q.correctIndex && (
+                    {showResult && isOptionCorrect && (
                       <motion.span 
                         className="text-2xl drop-shadow-md ml-2 flex-shrink-0"
                         initial={{ scale: 0 }}
