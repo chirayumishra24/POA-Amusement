@@ -1,7 +1,10 @@
+import { useEffect, useState } from 'react';
 import { useGameState } from '@/hooks/useGameState';
 import BrowniePoints from '@/components/BrowniePoints';
 import JourneyProgress from '@/components/JourneyProgress';
 import FloatingElements from '@/components/FloatingElements';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import WelcomeScreen from '@/components/screens/WelcomeScreen';
 import LearnScreen from '@/components/screens/LearnScreen';
 import QuizScreen from '@/components/screens/QuizScreen';
@@ -12,9 +15,63 @@ import SummaryScreen from '@/components/screens/SummaryScreen';
 import PresentScreen from '@/components/screens/PresentScreen';
 import SouvenirScreen from '@/components/screens/SouvenirScreen';
 import { AVATAR_OPTIONS, WEATHER_OPTIONS } from '@/lib/gameState';
+import { Maximize2, Minimize2 } from 'lucide-react';
 
 const Index = () => {
   const game = useGameState();
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isFullscreenSupported, setIsFullscreenSupported] = useState(false);
+
+  useEffect(() => {
+    const getFullscreenElement = () =>
+      document.fullscreenElement ||
+      (document as Document & { webkitFullscreenElement?: Element | null }).webkitFullscreenElement;
+
+    const updateFullscreenState = () => {
+      setIsFullscreen(Boolean(getFullscreenElement()));
+    };
+
+    const supportsFullscreen =
+      typeof document !== 'undefined' &&
+      (Boolean(document.documentElement?.requestFullscreen) ||
+        Boolean((document.documentElement as HTMLElement & { webkitRequestFullscreen?: () => Promise<void> }).webkitRequestFullscreen));
+
+    setIsFullscreenSupported(supportsFullscreen);
+    updateFullscreenState();
+
+    document.addEventListener('fullscreenchange', updateFullscreenState);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenState as EventListener);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', updateFullscreenState);
+      document.removeEventListener('webkitfullscreenchange', updateFullscreenState as EventListener);
+    };
+  }, []);
+
+  const toggleFullscreen = async () => {
+    const fullscreenElement =
+      document.fullscreenElement ||
+      (document as Document & { webkitFullscreenElement?: Element | null }).webkitFullscreenElement;
+
+    try {
+      if (!fullscreenElement) {
+        const element = document.documentElement;
+        const requestFullscreen =
+          element.requestFullscreen ||
+          (element as HTMLElement & { webkitRequestFullscreen?: () => Promise<void> }).webkitRequestFullscreen;
+
+        await requestFullscreen?.call(element);
+      } else {
+        const exitFullscreen =
+          document.exitFullscreen ||
+          (document as Document & { webkitExitFullscreen?: () => Promise<void> }).webkitExitFullscreen;
+
+        await exitFullscreen?.call(document);
+      }
+    } catch (error) {
+      console.error('Fullscreen toggle failed:', error);
+    }
+  };
 
   const getBackgroundClass = () => {
     switch (game.screen) {
@@ -39,6 +96,26 @@ const Index = () => {
     <div className={`min-h-screen relative transition-colors duration-1000 ${getBackgroundClass()}`}>
       {/* Floating background elements */}
       <FloatingElements />
+
+      {isFullscreenSupported && (
+        <div className="fixed top-4 right-4 z-50">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="secondary"
+                size="icon"
+                className="h-10 w-10 bg-white/85 text-slate-900 shadow-lg hover:bg-white"
+                aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+                onClick={toggleFullscreen}
+              >
+                {isFullscreen ? <Minimize2 /> : <Maximize2 />}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}</TooltipContent>
+          </Tooltip>
+        </div>
+      )}
       
       {/* Journey Progress - visible except on welcome */}
       {game.screen !== 'welcome' && (
